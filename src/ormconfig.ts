@@ -1,4 +1,4 @@
-import {ConnectionOptions} from "typeorm";
+import { ConnectionOptions } from "typeorm";
 import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 
