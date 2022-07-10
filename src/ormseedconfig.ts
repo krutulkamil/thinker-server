@@ -8,4 +8,4 @@ const ormseedconfig = {
     },
 };
 
-export default  ormseedconfig;
+export default ormseedconfig;
