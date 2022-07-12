@@ -8,6 +8,8 @@ import { ArticleResponseInterface } from "@app/article/types/articleResponse.int
 import { ArticlesResponseInterface } from "@app/article/types/articlesResponse.interface";
 import slugify from "slugify";
 import { FollowEntity } from "@app/profile/follow.entity";
+import { CommentEntity } from "@app/article/comment.entity";
+import {CommentResponseInterface} from "@app/article/types/commentResponse.interface";
 
 @Injectable()
 export class ArticleService {
@@ -17,7 +19,9 @@ export class ArticleService {
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(FollowEntity)
-        private readonly followRepository: Repository<FollowEntity>
+        private readonly followRepository: Repository<FollowEntity>,
+        @InjectRepository(CommentEntity)
+        private readonly commentRepository: Repository<CommentEntity>
     ) {};
 
     async findAll(currentUserId: number, query: any): Promise<ArticlesResponseInterface> {
@@ -125,8 +129,8 @@ export class ArticleService {
         }
 
         article.slug = this.getSlug(createArticleDto.title);
-
         article.author = currentUser;
+        article.comments = [];
 
         return await this.articleRepository.save(article);
     }
@@ -164,6 +168,42 @@ export class ArticleService {
     async findBySlug(slug: string): Promise<ArticleEntity> {
         return await this.articleRepository.findOne({slug});
     };
+
+    async findComments(slug: string): Promise<CommentResponseInterface> {
+        const article = await this.articleRepository.findOne({slug});
+        return {comments: article.comments};
+    };
+
+    async addComment(currentUser: UserEntity, slug: string, createArticleDto): Promise<ArticleResponseInterface> {
+        let article = await this.articleRepository.findOne({slug});
+
+        const comment = new CommentEntity();
+        Object.assign(comment, createArticleDto);
+
+        comment.author = currentUser;
+        article.comments.push(comment);
+
+        await this.commentRepository.save(comment);
+        article = await this.articleRepository.save(article);
+
+        return {article};
+    };
+
+    async deleteComment(slug: string, id: string): Promise<ArticleResponseInterface> {
+        let article = await this.articleRepository.findOne({slug});
+
+        const comment = await this.commentRepository.findOne(id);
+        const deleteIndex = article.comments.findIndex(_comment => _comment.id === comment.id);
+
+        if (deleteIndex >= 0) {
+            const deleteComment = article.comments.splice(deleteIndex, 1);
+            await this.commentRepository.delete(deleteComment[0].id);
+            article = await this.articleRepository.save(article);
+            return {article};
+        } else {
+            return {article};
+        }
+    }
 
     async addArticleToFavourites(slug: string, userId: number): Promise<ArticleEntity> {
         const article = await this.findBySlug(slug);
