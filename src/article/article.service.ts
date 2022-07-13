@@ -146,6 +146,9 @@ export class ArticleService {
             throw new HttpException('You are not an author', HttpStatus.FORBIDDEN);
         }
 
+        article.comments = [];
+
+        await this.articleRepository.save(article);
         return await this.articleRepository.delete({slug});
     };
 

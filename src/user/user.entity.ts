@@ -27,6 +27,11 @@ export class UserEntity {
         this.password = await hash(this.password, 10);
     };
 
+    @BeforeInsert()
+    async generateAvatar() {
+        this.image = `https://avatars.dicebear.com/api/bottts/${Math.floor(Math.random() * 100)}.svg`
+    }
+
     @OneToMany(() => ArticleEntity, (article) => article.author)
     articles: ArticleEntity[];
 
