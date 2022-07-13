@@ -1,10 +1,13 @@
 {
-  "name": "thinkster-server",
+  "name": "thinker-server",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
