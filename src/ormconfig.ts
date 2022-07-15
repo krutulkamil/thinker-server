@@ -21,6 +21,12 @@ const config: ConnectionOptions = {
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: false,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+    ssl: true,
+    extra: {
+        ssl: {
+            rejectUnauthorized: false
+        }
+    },
     cli: {
         migrationsDir: 'src/migrations',
     },
