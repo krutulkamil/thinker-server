@@ -1,23 +1,14 @@
 import { ConnectionOptions } from "typeorm";
-import * as fs from 'fs';
 import * as dotenv from 'dotenv';
-
-const environment = process.env.NODE_ENV || 'development';
-const {
-    DATABASE_HOST,
-    DATABASE_PORT,
-    DATABASE_USERNAME,
-    DATABASE_PASSWORD,
-    DATABASE_NAME
-} = dotenv.parse(fs.readFileSync(`${environment}.env`));
+dotenv.config();
 
 const config: ConnectionOptions = {
     type: 'postgres',
-    host: DATABASE_HOST,
-    port: parseInt(DATABASE_PORT) || 5432,
-    username: DATABASE_USERNAME,
-    password: DATABASE_PASSWORD,
-    database: DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
+    port: 5432,
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: false,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
