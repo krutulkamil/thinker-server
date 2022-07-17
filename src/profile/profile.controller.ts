@@ -10,6 +10,7 @@ import {
 import {ProfileService} from "@app/profile/profile.service";
 import {User} from "@app/user/decorators/user.decorator";
 import {ProfileResponseInterface} from "@app/profile/types/profileResponse.interface";
+import { Throttle } from "@nestjs/throttler";
 
 @Controller('profiles')
 export class ProfileController {
@@ -17,6 +18,7 @@ export class ProfileController {
     };
 
     @Get(':username')
+    @Throttle(10, 60)
     async getProfile(
         @User('id') currentUserId: number,
         @Param('username') profileUsername: string

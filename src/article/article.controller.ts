@@ -21,12 +21,14 @@ import {ArticlesResponseInterface} from "@app/article/types/articlesResponse.int
 import {CommentResponseInterface} from "@app/article/types/commentResponse.interface";
 import {DeleteResult} from "typeorm";
 import {BackendValidationPipe} from "@app/shared/pipes/backendValidation.pipe";
+import { Throttle } from "@nestjs/throttler";
 
 @Controller('articles')
 export class ArticleController {
     constructor(private readonly articlesService: ArticleService) {};
 
     @Get()
+    @Throttle(10, 60)
     async findAll(
         @User('id') currentUserId: number,
         @Query() query: any): Promise<ArticlesResponseInterface> {
@@ -34,6 +36,7 @@ export class ArticleController {
     }
 
     @Get('feed')
+    @Throttle(10, 60)
     @UseGuards(AuthGuard)
     async getFeed(
         @User('id') currentUserId: number,
@@ -53,6 +56,7 @@ export class ArticleController {
     };
 
     @Get(':slug')
+    @Throttle(10, 60)
     async getSingleArticle(@Param('slug') slug: string): Promise<ArticleResponseInterface> {
         const article = await this.articlesService.findBySlug(slug);
         return this.articlesService.buildArticleResponse(article);
@@ -87,6 +91,7 @@ export class ArticleController {
     };
 
     @Get(':slug/comments')
+    @Throttle(10, 60)
     async findComments(
         @Param('slug') slug: string): Promise<CommentResponseInterface> {
         return await this.articlesService.findComments(slug);
@@ -94,6 +99,7 @@ export class ArticleController {
 
     @Post(':slug/comments')
     @UseGuards(AuthGuard)
+    @UsePipes(new BackendValidationPipe())
     async createComment(
         @User() currentUser: UserEntity,
         @Param('slug') slug: string,
@@ -103,6 +109,7 @@ export class ArticleController {
 
     @Delete(':slug/comments/:id')
     @UseGuards(AuthGuard)
+    @UsePipes(new BackendValidationPipe())
     async deleteComment(
         @Param() params,
         @User() currentUser: UserEntity): Promise<ArticleResponseInterface> {
