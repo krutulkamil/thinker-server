@@ -16,7 +16,6 @@ import {UserEntity} from "@app/user/user.entity";
 import {AuthGuard} from "@app/user/guards/auth.guard";
 import {UpdateUserDto} from "@app/user/dto/updateUser.dto";
 import {BackendValidationPipe} from "@app/shared/pipes/backendValidation.pipe";
-import { Throttle } from "@nestjs/throttler";
 
 @Controller()
 export class UserController {
@@ -38,7 +37,6 @@ export class UserController {
     }
 
     @Get('user')
-    @Throttle(10, 60)
     @UseGuards(AuthGuard)
     async currentUser(
         @User() user: UserEntity
@@ -48,6 +46,7 @@ export class UserController {
 
     @Put('user')
     @UseGuards(AuthGuard)
+    @UsePipes(new BackendValidationPipe())
     async updateCurrentUser(
         @User('id') currentUserId: number,
         @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface> {

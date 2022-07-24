@@ -8,20 +8,17 @@ import { UserModule } from "@app/user/user.module";
 import { AuthMiddleware } from "./user/middlewares/auth.middleware";
 import { ArticleModule } from "./article/article.module";
 import { ProfileModule } from "./profile/profile.module";
-import { ThrottlerModule } from "@nestjs/throttler";
-import { appProviders } from "./app.providers";
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormconfig),
-    ThrottlerModule.forRoot({ ttl: 60, limit: 5 }),
     TagModule,
     UserModule,
     ArticleModule,
     ProfileModule
   ],
   controllers: [AppController],
-  providers: [AppService, ...appProviders]
+  providers: [AppService]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
